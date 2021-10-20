@@ -42,16 +42,38 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .cors().disable()
                 .csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/").permitAll()
-                .antMatchers(HttpMethod.GET, "/*").permitAll()
- .antMatchers("/userprofile", "/login").permitAll()
-.antMatchers("/css/**").permitAll()
+          .antMatchers("/").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/*").permitAll()
+                .antMatchers(HttpMethod.GET,"/userprofile/*").permitAll()
+                .antMatchers("/addPost").permitAll()
+                .antMatchers("/css/**").permitAll()
+                .antMatchers(HttpMethod.POST,"/followersFeed").permitAll()
+
                 .anyRequest().permitAll()
                 .and()
                 .formLogin()
-                .loginPage("/api/login")
-                .defaultSuccessUrl("/applicationusers")
+                .defaultSuccessUrl("/api/profile")
+                .loginPage("/api/login").permitAll()
                 .and()
-                .logout();
+                .logout()
+        .and()
+                .rememberMe();
+
+
+//        http
+//                .cors().disable()
+//                .csrf().disable()
+//                .authorizeRequests()
+//                .antMatchers("/", "/signup").permitAll()
+//                .antMatchers(HttpMethod.GET, "/api/*").permitAll()
+//                .anyRequest().authenticated()
+//                .and()
+//                .formLogin()
+//                .loginPage("/api/login")
+//                .defaultSuccessUrl("/profile", true)
+//                .permitAll()
+//                .and()
+//                .logout()
+//                .permitAll();
     }
 }

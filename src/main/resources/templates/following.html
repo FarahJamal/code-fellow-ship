@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+
+<form action="/followersFeed" method="post">
+  <fieldset>
+    <legend>Follow</legend>
+    <select name="giverId">
+      <option th:each="followers : ${appUser}"
+              th:text="${followers.name}"
+              th:value="${followers.id}"></option>
+
+      <!--            <option th:each="followers : ${applicationUser}"-->
+      <!--                    th:text="${followers.url}"-->
+      <!--                    th:value="${followers.id}"></option>-->
+    </select>
+
+    <select name="receiverId">
+      <option th:each="followers : ${appUser}"
+              th:text="${followers.name}"
+              th:value="${followers.id}"></option>
+
+      <!--            <option th:each="followers : ${applicationUser}"-->
+      <!--                    th:text="${followers.url}"-->
+      <!--                    th:value="${followers.id}"></option>-->
+    </select>
+    <input type="submit" value="follow">
+  </fieldset>
+</form>
+
+<ul>
+  <li th:each="followers : ${appUser}">
+    <h3 th:text="${followers.name}"> Hermione Olivia</h3>
+    <h4>I am a follower of</h4>
+    <ul>
+      <l th:each="giver : ${followers.usersFollowReceived}"
+         th:text="${followers.name}"> Lucy Goosey</l>
+    </ul>
+  </li>
+</ul>
+
+</body>
+</html>

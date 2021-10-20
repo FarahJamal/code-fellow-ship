@@ -3,30 +3,55 @@ package com.example.codefellowship.models;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.*;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.Date;
+import java.util.*;
 
 @Entity
 @Table(name = "users")
 public class ApplicationUser implements UserDetails {
-    /**username,
+    String url;
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    /**
+     * username,
      * password (will be hashed using BCrypt),
      * firstName,
      * lastName,
      * dateOfBirth,
      * bio,
-     * and any other fields you think are useful.*/
+     * and any other fields you think are useful.
+     **/
+
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
+    @OneToMany(mappedBy = "applicationUser")
+    List<UserPosts> posts;
+    public List<UserPosts> getPosts() {
+
+        return posts;
+    }
+
+    @ManyToMany(cascade = CascadeType.REMOVE)
+    @JoinTable(
+            name="user_followers",
+            joinColumns = {@JoinColumn(name="giver")},
+            inverseJoinColumns = {@JoinColumn(name="receiver")}
+    )
+    Set<ApplicationUser> usersFollowTo = new HashSet<>();
+
+    @ManyToMany(mappedBy = "usersFollowTo")
+    Set<ApplicationUser> usersFollowReceived = new HashSet<>();
 
     @Column(name = "first_name")
     private String firstName;
@@ -37,11 +62,8 @@ public class ApplicationUser implements UserDetails {
     private String email;
     @Column(unique = true)
     private String username;
-
     @Column(columnDefinition = "Text")
     private  String bio;
-
-
     private String password;
     private String dateOfBirth;
     private String body;
@@ -67,17 +89,7 @@ public class ApplicationUser implements UserDetails {
 
     }
 
-//    public ApplicationUser(String firstName, String lastName, String email, String username, String bio, String password, Date dateOfBirth) {
-//        super();
-//
-//        this.firstName = firstName;
-//        this.lastName = lastName;
-//        this.email = email;
-//        this.username = username;
-//        this.bio = bio;
-//        this.password = password;
-//        this.dateOfBirth = dateOfBirth;
-//    }
+
 
     public ApplicationUser(String firstName, String lastName, String email) {
         super();
@@ -117,7 +129,13 @@ public class ApplicationUser implements UserDetails {
     public void setEmail(String email) {
         this.email = email;
     }
+    public Set<ApplicationUser> getUsersFollowTo() {
+        return usersFollowTo;
+    }
 
+    public Set<ApplicationUser> getUsersFollowReceived() {
+        return usersFollowReceived;
+    }
 
 
     public void setUsername(String username) {
@@ -148,22 +166,22 @@ public class ApplicationUser implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isEnabled() {
-        return false;
+        return true;
     }
 
     public void setPassword(String password) {
@@ -177,5 +195,19 @@ public class ApplicationUser implements UserDetails {
     public void setDateOfBirth(String dateOfBirth) {
         this.dateOfBirth = dateOfBirth;
     }
-
+//    public Set<ApplicationUser> getFollowing() {
+//        return following;
+//    }
+//
+//    public void setFollowing(Set<ApplicationUser> following) {
+//        this.following = following;
+//    }
+//
+//    public List<ApplicationUser> getFollowers() {
+//        return followers;
+//    }
+//
+//    public void setFollowers(List<ApplicationUser> followers) {
+//        this.followers = followers;
+//    }
 }

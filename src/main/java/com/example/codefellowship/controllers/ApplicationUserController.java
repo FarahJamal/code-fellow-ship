@@ -4,9 +4,13 @@ import com.example.codefellowship.models.ApplicationUser;
 import com.example.codefellowship.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.reactive.result.view.RedirectView;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -16,7 +20,6 @@ import java.util.Date;
 
 @Controller
 @CrossOrigin(origins = "http://localhost:3001")
-@RestController
 @RequestMapping("api/")
 public class ApplicationUserController {
     @Autowired
@@ -28,27 +31,29 @@ public class ApplicationUserController {
 
 
     @PostMapping("/applicationuser")
-    public ResponseEntity createUser(@RequestBody ApplicationUser applicationUser) throws URISyntaxException {
+    public String createUser(@RequestBody ApplicationUser applicationUser) throws URISyntaxException {
 
-  applicationUser.setPassword(passwordEncoder.encode(applicationUser.getPassword()));
-        ApplicationUser savedUser=applicationUserRepository.save(applicationUser);
-        return ResponseEntity.created(new URI("/applicationuser/" + savedUser.getId())).body(savedUser);
+        applicationUser.setPassword(passwordEncoder.encode(applicationUser.getPassword()));
+        applicationUserRepository.save(applicationUser);
+        //return ResponseEntity.created(new URI("http://localhost:3001/api/users" + savedUser.getId())).body(savedUser);
+        return "redirect:http://localhost:8089/api/users";
+    }
+
+    @GetMapping("/login")
+    public String showLoginPage() {
+        return "login";
     }
 
 
+    @GetMapping("/profile")
+    public String getProfile(Model model) {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        ApplicationUser applicationUser = applicationUserRepository.findByUsername(userDetails.getUsername());
 
-//    @GetMapping("/login")
-//    public String showLoginPage(){
-//        return "login.html";
-//    }
-//
-//    @GetMapping("/index")
-//    public String showSignUpPage(){
-//        return "index.html";
-//    }
-//
-//    @GetMapping("/applicationusers")
-//    public String showUserPage(){
-//        return "applicationusers.html";
-//    }
+        if (applicationUser == null)
+            return "redirect:http://localhost:8089/api/users";
+
+        model.addAttribute("user", applicationUser);
+        return "profile";
+    }
 }

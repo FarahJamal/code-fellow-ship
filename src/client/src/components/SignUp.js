@@ -11,7 +11,6 @@ class SignUp extends React.Component{
             firstName:'',
             lastName:'',
             bio:'',
-            body:'',
             email:'',
             dateOfBirth:'',
             password:'',
@@ -24,12 +23,11 @@ class SignUp extends React.Component{
     addUsers = async (event) => {
 
         event.preventDefault();
-        const URL = `http://localhost:8081/api/applicationuser`;
+        const URL = `http://localhost:8089/api/applicationuser`;
         const firstName=event.target.firstName.value;
         const lastName=event.target.lastName.value;
         const username=event.target.username.value;
         const bio=event.target.bio.value;
-        const body=event.target.body.value;
         const email=event.target.email.value;
         const dateOfBirth=event.target.date.value;
         const password=event.target.password.value;
@@ -39,7 +37,6 @@ class SignUp extends React.Component{
             lastName: lastName,
             username:username,
             bio:bio,
-            body:body,
             email:email,
             dateOfBirth: dateOfBirth,
             password:password
@@ -83,7 +80,6 @@ console.log(e);
                     <input type="email" placeholder="email" name='email' />
                     <input type="password" placeholder="password" name='password' />
                     <input type="text" placeholder="bio" name='bio' />
-                    <input type="text" placeholder="Add a body" name='body' />
                     <input type="date"  name='date' />
                     <button type="submit">
                     Submit

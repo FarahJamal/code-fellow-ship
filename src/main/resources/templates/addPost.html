@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="https://www.thymeleaf.org" lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Page1</title>
+</head>
+<body>
+
+
+<div class="postForm">
+  <form action="/newpost" method="post" >
+    <h1>Add a New Post: </h1>
+
+    <div class="form-outline mb-4">
+      <textarea name="body" class="form-control" id="form6Example7" rows="4"></textarea>
+    </div>
+
+    <input type="submit" value="Add" />
+  </form>
+</div>
+
+<ul th:each="post : ${user}">
+  <li>
+    <h6 th:text="${post.getApplicationUser().getUsername()}"></h6>  </li>
+  Text : <li th:text="${post.body}">
+
+</li>
+
+  At Time : <li th:text="${post.getCreatedAt()}">  </li>
+</ul>
+<!--<div class="card text-white bg-danger  mb-3" style="max-width: 18rem;">-->
+<!--  <div class="card-header">Post</div>-->
+<!--  <div th:each="post : ${posts}" class="card-body" >-->
+<!--    <p class="card-text" th:text="${post.getBody()}"></p>-->
+<!--  </div>-->
+<!--</div>-->
+</body>
+</html>
