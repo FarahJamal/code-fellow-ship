@@ -10,6 +10,8 @@ import java.util.*;
 @Entity
 @Table(name = "users")
 public class ApplicationUser implements UserDetails {
+    private static final long serialVersionUID = 6276414423811390858L;
+
     String url;
 
     public String getUrl() {
@@ -42,16 +44,15 @@ public class ApplicationUser implements UserDetails {
         return posts;
     }
 
-    @ManyToMany(cascade = CascadeType.REMOVE)
-    @JoinTable(
-            name="user_followers",
-            joinColumns = {@JoinColumn(name="giver")},
-            inverseJoinColumns = {@JoinColumn(name="receiver")}
-    )
-    Set<ApplicationUser> usersFollowTo = new HashSet<>();
 
-    @ManyToMany(mappedBy = "usersFollowTo")
-    Set<ApplicationUser> usersFollowReceived = new HashSet<>();
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(name = "following_followers",
+            joinColumns = @JoinColumn(name = "followee_id"),
+            inverseJoinColumns = @JoinColumn(name = "follower_id"))
+    Set<ApplicationUser> followers = new HashSet<>();
+
+    @ManyToMany(mappedBy = "followers")
+    Set<ApplicationUser> following = new HashSet<>();
 
     @Column(name = "first_name")
     private String firstName;
@@ -62,13 +63,30 @@ public class ApplicationUser implements UserDetails {
     private String email;
     @Column(unique = true)
     private String username;
+
+    public Set<ApplicationUser> getFollowers() {
+        return followers;
+    }
+
+    public Set<ApplicationUser> getFollowing() {
+        return following;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
     @Column(columnDefinition = "Text")
     private  String bio;
     private String password;
     private String dateOfBirth;
     private String body;
     private LocalDateTime createdAt;
-
+private String imageUrl;
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
@@ -129,13 +147,7 @@ public class ApplicationUser implements UserDetails {
     public void setEmail(String email) {
         this.email = email;
     }
-    public Set<ApplicationUser> getUsersFollowTo() {
-        return usersFollowTo;
-    }
 
-    public Set<ApplicationUser> getUsersFollowReceived() {
-        return usersFollowReceived;
-    }
 
 
     public void setUsername(String username) {
@@ -192,22 +204,8 @@ public class ApplicationUser implements UserDetails {
         return dateOfBirth;
     }
 
-    public void setDateOfBirth(String dateOfBirth) {
-        this.dateOfBirth = dateOfBirth;
-    }
-//    public Set<ApplicationUser> getFollowing() {
-//        return following;
-//    }
-//
-//    public void setFollowing(Set<ApplicationUser> following) {
-//        this.following = following;
-//    }
-//
-//    public List<ApplicationUser> getFollowers() {
-//        return followers;
-//    }
-//
-//    public void setFollowers(List<ApplicationUser> followers) {
-//        this.followers = followers;
-//    }
+
+
+
+
 }

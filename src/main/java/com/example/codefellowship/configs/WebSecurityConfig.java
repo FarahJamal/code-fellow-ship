@@ -42,22 +42,40 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .cors().disable()
                 .csrf().disable()
                 .authorizeRequests()
-          .antMatchers("/").permitAll()
-                .antMatchers(HttpMethod.GET, "/api/*").permitAll()
-                .antMatchers(HttpMethod.GET,"/userprofile/*").permitAll()
-                .antMatchers("/addPost").permitAll()
-                .antMatchers("/css/**").permitAll()
-                .antMatchers(HttpMethod.POST,"/followersFeed").permitAll()
-
-                .anyRequest().permitAll()
+                //allow requests to all urls that match the pattern
+                .antMatchers("/", "/api/*", "/login", "/*.css").permitAll()
+                .antMatchers(HttpMethod.GET, "/*.css").permitAll()
+                //anything else you must be logged in
+                .anyRequest().authenticated()
                 .and()
                 .formLogin()
-                .defaultSuccessUrl("/api/profile")
-                .loginPage("/api/login").permitAll()
+                .loginPage("/api/login")
+                .defaultSuccessUrl("/myprofile", true)
+                .failureUrl("/login?error=true")
                 .and()
                 .logout()
-        .and()
-                .rememberMe();
+                .logoutSuccessUrl("/");
+
+//        http
+//                .cors().disable()
+//                .csrf().disable()
+//                .authorizeRequests()
+//          .antMatchers("/").permitAll()
+//                .antMatchers(HttpMethod.GET, "/api/*").permitAll()
+//                .antMatchers(HttpMethod.GET,"/userprofile/*").permitAll()
+//                .antMatchers("/addPost").permitAll()
+//                .antMatchers("/css/**").permitAll()
+//                .antMatchers(HttpMethod.POST,"/*").permitAll()
+//
+//                .anyRequest().permitAll()
+//                .and()
+//                .formLogin()
+//                .defaultSuccessUrl("/api/profile")
+//                .loginPage("/api/login").permitAll()
+//                .and()
+//                .logout()
+//        .and()
+//                .rememberMe();
 
 
 //        http

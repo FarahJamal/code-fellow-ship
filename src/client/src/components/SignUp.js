@@ -14,6 +14,7 @@ class SignUp extends React.Component{
             email:'',
             dateOfBirth:'',
             password:'',
+            imageUrl:'',
             usersData:[]
         }
 
@@ -31,6 +32,7 @@ class SignUp extends React.Component{
         const email=event.target.email.value;
         const dateOfBirth=event.target.date.value;
         const password=event.target.password.value;
+        const imageUrl=event.target.imageUrl.value();
 
         const userData ={
            firstName: firstName,
@@ -39,7 +41,8 @@ class SignUp extends React.Component{
             bio:bio,
             email:email,
             dateOfBirth: dateOfBirth,
-            password:password
+            password:password,
+            imageUrl:imageUrl
         }
         console.log(userData);
         axios.post(URL, userData)
@@ -80,6 +83,8 @@ console.log(e);
                     <input type="email" placeholder="email" name='email' />
                     <input type="password" placeholder="password" name='password' />
                     <input type="text" placeholder="bio" name='bio' />
+                    <input type="text" placeholder="image url" name='imageUrl' />
+
                     <input type="date"  name='date' />
                     <button type="submit">
                     Submit

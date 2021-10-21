@@ -54,6 +54,6 @@ public class ApplicationUserController {
             return "redirect:http://localhost:8089/api/users";
 
         model.addAttribute("user", applicationUser);
-        return "profile";
+        return "";
     }
 }

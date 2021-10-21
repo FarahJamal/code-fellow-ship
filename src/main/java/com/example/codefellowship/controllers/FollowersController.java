@@ -1,29 +1,16 @@
 package com.example.codefellowship.controllers;
-
-import com.example.codefellowship.models.UserPosts;
 import com.example.codefellowship.repositories.PostsRepositoty;
 import com.example.codefellowship.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import com.example.codefellowship.models.ApplicationUser;
-import com.example.codefellowship.repositories.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.reactive.result.view.RedirectView;
-
-import java.net.URI;
-import java.net.URISyntaxException;
+import org.springframework.web.servlet.view.RedirectView;
 import java.security.Principal;
-import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+
 
 @Controller
 public class FollowersController {
@@ -34,52 +21,83 @@ public class FollowersController {
 
     @Autowired
     PostsRepositoty postRepository;
+    @GetMapping("/myprofile")
+    public String getProfilePage(Principal p, Model m) {
+        ApplicationUser currentUser = applicationUserRepository.findByUsername(p.getName());
+        m.addAttribute("currentUser", currentUser);
+        m.addAttribute("sessionStatus", true);
+        return "profile";
+    }
+    @GetMapping("/users/{id}")
+    public String getUserById(@PathVariable long id, Principal p, Model m){
+        ApplicationUser searchedUser = applicationUserRepository.findById(id).get();
+        ApplicationUser currentUser = applicationUserRepository.findByUsername(p.getName());
+        boolean sessionStatus = isLoggedInUserTheSameAsSearchedUser(currentUser, searchedUser);
+        boolean followerStatus = isLoggedInUserAlreadyFollowingSearchedUser(currentUser, searchedUser);
+        m.addAttribute("currentUser", searchedUser);
+        m.addAttribute("sessionStatus", sessionStatus);
+        m.addAttribute("followerStatus", followerStatus);
 
-    @GetMapping("/profile/{id}")
-    public String getHome(Model m, @PathVariable("id") Long id){
-        Object princpal= SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if(princpal instanceof UserDetails){
-            String username=((UserDetails)princpal).getUsername();
-            m.addAttribute("username",username);
-            ApplicationUser pro=applicationUserRepository.findById(id).get();
-            List<UserPosts> post=pro.getPosts();
-            m.addAttribute("postses",post);
-        }else {
-            String username=princpal.toString();
-        }
-        m.addAttribute("username",applicationUserRepository.findById(id).get());
-        return "users";
+        return "profile";
     }
 
-    @PostMapping("/following")
-    public String showFollowers(String firstName, String lastName, String url){
-        ApplicationUser applicationUser = new ApplicationUser();
-        applicationUser.setFirstName(firstName);
-        applicationUser.setLastName(lastName);
-        applicationUser.setUrl(url);
-        applicationUserRepository.save(applicationUser);
-        return ("redirect:/following");
-    }
-    @GetMapping("/following")
-    public String show(Model model,UserPosts post){
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    @GetMapping("/discover")
+    public String showAllTheUsersInDataBase(Principal p, Model m){
+        ApplicationUser loggedInUser = applicationUserRepository.findByUsername(p.getName());
+        Iterable<ApplicationUser> allUsers = applicationUserRepository.findAll();
+        List allUsersList =new ArrayList((Collection) allUsers);
+        allUsersList.remove(loggedInUser);
+        allUsersList.removeAll(loggedInUser.getFollowing());
 
-        model.addAttribute("posts",post.getBody());
-        model.addAttribute("user", postRepository.findAll());
-
-        return ("userprofile");
-    }
-    @PostMapping("/followersFeed")
-    public String giveFollowers(long giverId, long receiverId){
-        ApplicationUser giver = applicationUserRepository.findById(giverId).get();
-        ApplicationUser receiver = applicationUserRepository.findById(receiverId).get();
-
-        giver.getUsersFollowReceived().add(receiver);
-
-        applicationUserRepository.save(receiver);
-
-        return ("redirect:/following");
+        m.addAttribute("allUsers", allUsersList);
+        m.addAttribute("currentUser", loggedInUser);
+        m.addAttribute("sessionStatus", true);
+        return "discover";
     }
 
+    @GetMapping ("/individualUser")
+    public String followUser(@RequestParam String username, Principal p, Model m){
+        ApplicationUser currentUser = applicationUserRepository.findByUsername(p.getName());
+        ApplicationUser userToFollow = applicationUserRepository.findByUsername(username);
+        System.out.println("this is my current user: "+ currentUser.getUsername());
+        System.out.println("this is the user I want to follow: "+ userToFollow.getUsername());
+        currentUser.getFollowing().add(userToFollow);
+        userToFollow.getFollowers().add(currentUser);
+        applicationUserRepository.save(currentUser);
+        applicationUserRepository.save(userToFollow);
+        m.addAttribute("currentUser", currentUser);
+        return ("redirect:/myprofile");
+    }
+
+
+    @GetMapping("/feed")
+    public String getPostFeed(Principal p, Model m) {
+        ApplicationUser currentUser = applicationUserRepository.findByUsername(p.getName());
+        m.addAttribute("following", currentUser.getFollowing());
+        m.addAttribute("currentUser", currentUser);
+        m.addAttribute("sessionStatus", true);
+        return "feed";
+    }
+
+    public Boolean isUserLoggedIn(Principal p){
+        if(p != null)
+            return true;
+        else
+            return false;
+    }
+
+    public Boolean isLoggedInUserTheSameAsSearchedUser(ApplicationUser currentUser, ApplicationUser targetUser) {
+        if(currentUser.getUsername().equals(targetUser.getUsername()))
+            return true;
+        else
+            return false;
+    }
+
+    public Boolean isLoggedInUserAlreadyFollowingSearchedUser(ApplicationUser currentUser, ApplicationUser searchedUser){
+        if(currentUser.getFollowing().contains(searchedUser))
+            return true;
+        else
+            return false;
+    }
     }
 

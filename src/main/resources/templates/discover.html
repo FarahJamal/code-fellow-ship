@@ -8,19 +8,21 @@
 </head>
 <body>
 
+
+
 <div class="middleDivs">
-    <h3>Your NewsFeed</h3>
+    <h3> Discover New Players </h3>
     <div>
-        <div th:each = "user : ${following}">
+        <div th:each = "user : ${allUsers}">
+            <a th:href="@{'/users/' + ${user.getId()}}"><img th:src="${user.imageUrl}" style="width: 80px;"></a>
             <div class="aboutMe">
-                <p th:each = "post: ${user.posts}">
-                    <a th:href="@{'/users/' + ${post.creator.getId()}}" ><span th:text="${post.body}"> </span></a>
-                </p>
-                <p th:if="${!user.posts.empty()}"><img th:src="${user.imageUrl}" style="width: 35px;" > <span th:text="${user.username}"></span></p>
+                <p> Name: <span th:text="${user.firstName}"> </span> <span th:text="${user.lastName}"> </span> </p>
+                <p> Date of Birth: <span th:text="${user.dateOfBirth}"></span></p>
+                <p> Biography: <span th:text="${user.bio}"></span></p>
             </div>
+            <hr>
         </div>
     </div>
-
 </div>
 
 </body>
